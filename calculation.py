@@ -3,6 +3,7 @@ from math import log2
 
 def Info(dataset, classset):
     # 数据集大小
+    # 计算Shannon熵
     datasize = dataset.shape[0] # ndarray row's number
     # ShannonEntropy = 0.0
 
@@ -41,20 +42,50 @@ def splitDataSet(datasset, classset, pois, value): # gene's poistion ACGT
 
     return dsA4ret, csA4ret # 这样分要确定好两个的shape
 
-def bestDataSet2split(dataset, classset):
-    datasize = dataset.shape[0] # row
+def bestPois2split(dataset, classset):
+    # datasize = dataset.shape[0] # row
     labelsize = dataset.shape[1] # col
     info = Info(dataset, classset)
-    # ???
+    bestInfoGain = 0.0
+    bestPois = -1
     for i in range(labelsize):
-        E_condition = 0.0
-        
+        tempEnt = 0.0
+        for value in [0, 1, 2, 4]:
+            subDataSet, subClassSet = splitDataSet(dataset, classset, i, value)
+            # 此处不需要划分数据集。。。
+            prob = subClassSet.shape[1] / float(labelsize)
+            tempEnt += prob * Info(subDataSet, subClassSet)
+              
+        tempInfoGain = info - tempEnt
+        if(tempInfoGain > bestInfoGain):
+            bestInfoGain = tempInfoGain
+            bestPois = i
     
+    return bestPois
 
+def ID3Tree(dataset, classset, labels):
+    # labels = [0, 1, .., 59]
+    if (sum(classset) == classset.shape[1] * classset[0]): # 同一类
+        return classset[0]
+    if (dataset.shape[1] == 1): # 分到最后只有一个特征但是属于不同类
+        # 多数表决（可能是错误率所在）
+        # 随机可以？
+        return np.argmax(np.bincount(classset)) # hahaha
+    
+    bestFeature = bestPois2split(dataset, classset)
+    bestFeatureLabel = labels[bestFeature]
+    tree = {bestFeatureLabel : {}} # mat / json 字典构树
+    del[labels[bestFeature]]
 
-    return dataset, classset
+    value = [0, 1, 2, 4]
+    for i in range(4):
+        if ((dataset[:bestFeature] == value[i]).any()):
+            subLabels = labels[:]
+            subdataset, subclassset = splitDataSet(dataset, classset, bestFeature, value[i]) # 合在一起好像更好。。。
+            tree[bestFeatureLabel][value[i]] = ID3Tree(subdataset, subclassset, subLabels)
+            # tree[bestFeatureLabel][value[i]] = ID3Tree(splitDataSet(dataset, classset, bestFeature, value[i]), subLabels) # 这样好像不对。。。
 
-
+    return tree
     
     
 

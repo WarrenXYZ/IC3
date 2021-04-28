@@ -36,3 +36,15 @@ print(line)
 lines = fin.readlines()
 print(lines)
 """
+
+for i in [0,1,2,8]:
+    print(i)
+
+from collections import  Counter
+data = np.array([1.1,2,3,4,4,5])
+print(data)
+print(Counter(data)[1.1])  # {label:sum(label)}
+ 
+#简单方法
+sum(data==4)
+print(sum(data))
