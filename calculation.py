@@ -1,17 +1,20 @@
 import numpy as np
 from math import log2
 
-def Info(dataset, classset):
+# 特征与分类放在同一个array归为dataset, 原dataset, classset->dataset
+
+# 计算Shannon熵
+def Info(dataset):
     # 数据集大小
-    # 计算Shannon熵
     datasize = dataset.shape[0] # ndarray row's number
     # ShannonEntropy = 0.0
 
-    # labelcnt = {}
+    # labelcnt = {}表示ei, ie, n的数目
     labelcnt = [0, 0, 0]
     # 统计
     for i in range(datasize):
-        labelcnt[classset[i] - 1] += 1
+        # labelcnt[classset[i] - 1] += 1
+        labelcnt[dataset[i, -1] - 1] += 1
 
     """
     mask = np.unique(classset)
@@ -29,18 +32,21 @@ def Info(dataset, classset):
     return ShannonEntropy
 
 
-def splitDataSet(datasset, classset, pois, value): # gene's poistion ACGT
-    dsL4return = []
-    csL4return = []
+def splitDataSet(datasset, pois, value): # gene's poistion ACGT
+    # 将pois位置上等于value(ACGT)的数据挑出,稍后作为树的分支
+
+    # L:lsit, A:array
+    dsL4return = [] # 直接用空array要处理开头的多余元素,先用list承接,再转为array
+    # csL4return = []
     for i in range(datasset.shape[0]):
         if datasset[i][pois] == value:
             dsL4return.append(datasset[i])
-            csL4return.append(classset[i])
+            # csL4return.append(classset[i])
 
     dsA4ret = np.array(dsL4return)
-    csA4ret = np.array(csL4return)
+    # csA4ret = np.array(csL4return)
 
-    return dsA4ret, csA4ret # 这样分要确定好两个的shape
+    return dsA4ret
 
 def bestPois2split(dataset, classset):
     # datasize = dataset.shape[0] # row

@@ -1,3 +1,4 @@
+from os import lseek
 import numpy as np
 import math
 x = np.empty((2, 3))
@@ -43,6 +44,15 @@ for i in [0,1,2,8]:
 from collections import  Counter
 data = np.array([1.1,2,3,4,4,5])
 print(data)
+lista = []
+lista.append(data)
+print("hh")
+print(lista)
+lista.append(data)
+print(lista)
+print("hhh")
+arrayb = np.array(lista)
+print(arrayb)
 print(Counter(data)[1.1])  # {label:sum(label)}
  
 #简单方法
