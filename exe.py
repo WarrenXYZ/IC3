@@ -46,15 +46,38 @@ data = np.array([1.1,2,3,4,4,5])
 print(data)
 lista = []
 lista.append(data)
+arrayE = np.array(lista)
 print("hh")
 print(lista)
 lista.append(data)
+
+print(arrayE)
 print(lista)
 print("hhh")
 arrayb = np.array(lista)
-print(arrayb)
+print(arrayb[0][1])
+print(np.delete(arrayb[0], 1))
+print(arrayb[:,-1])
+arrayc = arrayb[:,-1]
+print(arrayc.shape[0])
+
 print(Counter(data)[1.1])  # {label:sum(label)}
  
 #简单方法
 sum(data==4)
 print(sum(data))
+
+listha = [1,2,3]
+print(listha)
+del[listha[1]]
+print(listha)
+
+print(arrayb)
+arrayb_true = (arrayb[:1] == 2.0)
+print(arrayb_true)
+print(type(arrayb_true))
+
+listg = list(range(5))
+print(listg)
+
+print(arrayb[0, -1])
