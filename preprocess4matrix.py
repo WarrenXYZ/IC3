@@ -44,3 +44,8 @@ print(DNA_pois_class_array)
 
 fin.close()
 
+dna_list = DNA_pois_class_array.tolist()
+print(dna_list)
+print(type(DNA_pois_class_array))
+print(type(dna_list))
+

@@ -48,7 +48,7 @@ lista = []
 lista.append(data)
 arrayE = np.array(lista)
 print("hh")
-print(lista)
+print(list(lista))
 lista.append(data)
 
 print(arrayE)

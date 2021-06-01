@@ -6,6 +6,8 @@ Decision Tree Source Code for Machine Learning in Action Ch. 3
 from math import log
 import operator
 
+import numpy as np
+
 def createDataSet():
     dataSet = [[1, 1, 'yes'],
                [1, 1, 'yes'],
@@ -24,6 +26,7 @@ def calcShannonEnt(dataSet):
         if currentLabel not in labelCounts.keys(): labelCounts[currentLabel] = 0
         labelCounts[currentLabel] += 1
     shannonEnt = 0.0
+    # print(labelCounts)
     for key in labelCounts:
         prob = float(labelCounts[key])/numEntries
         shannonEnt -= prob * log(prob,2) #log base 2
@@ -36,6 +39,8 @@ def splitDataSet(dataSet, axis, value):
             reducedFeatVec = featVec[:axis]     #chop out axis used for splitting
             reducedFeatVec.extend(featVec[axis+1:])
             retDataSet.append(reducedFeatVec)
+    # if axis == 33:
+        # print(retDataSet)
     return retDataSet
     
 def chooseBestFeatureToSplit(dataSet):
@@ -64,7 +69,11 @@ def majorityCnt(classList):
     sortedClassCount = sorted(classCount.iteritems(), key=operator.itemgetter(1), reverse=True)
     return sortedClassCount[0][0]
 
-def createTree(dataSet,labels):
+def createTree(dataSet,labels, N):
+    
+    N = N + 1
+    # if N == 3:
+        # return 5
     classList = [example[-1] for example in dataSet]
     if classList.count(classList[0]) == len(classList): 
         return classList[0]#stop splitting when all of the classes are equal
@@ -74,11 +83,17 @@ def createTree(dataSet,labels):
     bestFeatLabel = labels[bestFeat]
     myTree = {bestFeatLabel:{}}
     del(labels[bestFeat])
+
+    print(bestFeat)
+    # print(labels)
+    print("*****")
     featValues = [example[bestFeat] for example in dataSet]
     uniqueVals = set(featValues)
     for value in uniqueVals:
+        #print(value)
+        #print("*****")
         subLabels = labels[:]       #copy all of labels, so trees don't mess up existing labels
-        myTree[bestFeatLabel][value] = createTree(splitDataSet(dataSet, bestFeat, value),subLabels)
+        myTree[bestFeatLabel][value] = createTree(splitDataSet(dataSet, bestFeat, value),subLabels,N)
     return myTree                            
     
 def classify(inputTree,featLabels,testVec):
@@ -103,3 +118,59 @@ def grabTree(filename):
     fr = open(filename)
     return pickle.load(fr)
     
+def preprocess4matrix():
+    fin = open('./dna.data', 'r')
+    DNA_pois_class_array = np.empty([], dtype = int)
+    # DNA_clas_array = np.empty([], dtype = int)
+
+    # 第一行单独处理先得一个array再append / 去掉第一个元素
+
+    for line in  fin.readlines():
+        for i in range(0, len(line) - 3, 6): # "\n"占1
+            if line[i] == "1":
+                #fout_str += 'A'
+                DNA_pois_class_array = np.append(DNA_pois_class_array, [4])
+            elif line[i + 2] == "1":
+                #fout_str += 'C'
+                DNA_pois_class_array = np.append(DNA_pois_class_array, [2])
+            elif line[i + 4] == "1":
+                #fout_str += 'G'
+                DNA_pois_class_array = np.append(DNA_pois_class_array, [1])
+            else:
+                #fout_str += 'T'
+                DNA_pois_class_array = np.append(DNA_pois_class_array, [0])
+                # fout_str.append("T")
+    
+        if line[-3] == "1":
+            #fout_str += " ei\n"
+            DNA_pois_class_array = np.append(DNA_pois_class_array, [1])
+        elif line[-3] == "2":
+            #fout_str += " ie\n"
+            DNA_pois_class_array = np.append(DNA_pois_class_array, [2])
+        else:
+            #fout_str += " n\n"
+            DNA_pois_class_array = np.append(DNA_pois_class_array, [3])
+
+    # 用空数组接第一个元素不为空要删除
+    DNA_pois_class_array = np.delete(DNA_pois_class_array, 0)
+    # DNA_clas_array = np.delete(DNA_clas_array, 0)
+    DNA_pois_class_array = np.reshape(DNA_pois_class_array, (2000, 61))
+    # DNA的位置信息与分类信息放在同一个array表示, array的最后一列表示类别
+    # print(DNA_pois_class_array)
+    # print(DNA_clas_array)
+
+    fin.close()
+
+    # return DNA_pois_class_array
+    dna_list = DNA_pois_class_array.tolist()
+    # print(dna_list)
+    # print(type(DNA_pois_class_array))
+    # print(type(dna_list))
+    dna_labels = list(range(1, 61))
+    return dna_list, dna_labels
+
+dataset, labels = preprocess4matrix()
+
+id3 = createTree(dataset, labels,0)
+
+print("success!")
